@@ -1,4 +1,14 @@
 {
   "authorized": ["1288372982", "32871283"],
-  "granted": []
+  "granted": [],
+  "admin": ["1288372982"],
+  "log": [],
+  "wallet": {
+    "ETH": "0xYourEthAddress",
+    "TRX": "TRXYourAddress",
+    "minPayment": {
+      "ETH": 0.003,
+      "TRX": 8
+    }
+  }
 }
