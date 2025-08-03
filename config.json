@@ -1,4 +1,12 @@
 {
+  "telegram": {
+    "token": "ТВОЙ_ТОКЕН_БОТА",
+    "webhook_url": "https://numnet.vercel.app"  // твой Vercel-домен
+  },
+  "admin": ["1288372982"],
+  "granted": {}
+}
+{
   "authorized": ["1288372982", "32871283"],
   "granted": [],
   "admin": ["1288372982"],
