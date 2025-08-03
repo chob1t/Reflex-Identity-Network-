@@ -1,0 +1,15 @@
+// bot.js
+const TelegramBot = require('node-telegram-bot-api');
+const fs = require('fs');
+const config = require('./config.json');
+
+const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
+
+bot.onText(/\/token/, (msg) => {
+  const id = msg.chat.id;
+  if (config.authorized.includes(id.toString())) {
+    bot.sendMessage(id, '🎟️ Ваш токен: vasydrop_premium');
+  } else {
+    bot.sendMessage(id, '🚫 Токен недоступен. Оплатите через ЮMoney и попробуйте снова.');
+  }
+});
