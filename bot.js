@@ -1,38 +1,46 @@
-// bot.js — NUMNet Telegram Bot Engine
+ — NUMNet Webhook-ready for Vercel
 const TelegramBot = require('node-telegram-bot-api');
+const express = require('express');
+const bodyParser = require('body-parser');
 const fs = require('fs');
 const config = require('./config.json');
 
-const bot = new TelegramBot(config.telegram.token, { polling: true });
+const app = express();
+app.use(bodyParser.json());
 
-// Приветствие
+const token = config.telegram.token;
+const bot = new TelegramBot(token);
+bot.setWebHook(`${config.telegram.webhook_url}/b
+
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, `👋 Привет, ${msg.from.first_name}! Добро пожаловать в NUMNet. Введите /help для списка команд.`);
+  bot.sendMessage(msg.chat.id, `👋 Добро пожаловать в NUMNet, ${msg.from.first_name}!`);
 });
 
-// Выдача токена
 bot.onText(/\/grant (.+)/, (msg, match) => {
-  const userId = msg.chat.id;
+  const userId = msg.chat.id.toString();
   const tokenName = match[1];
-  if (config.admin.includes(userId.toString())) {
+  if (config.admin.includes(userId)) {
     config.granted[userId] = tokenName;
-    fs.writeFileSync('config.json', JSON.stringify(config, null, 2));
-    bot.sendMessage(userId, `✅ Токен ${tokenName} успешно выдан.`);
+    fs.writeFileSync('./config.json', JSON.stringify(config, null, 2));
+    bot.sendMessage(msg.chat.id, `✅ Выдан токен: ${tokenName}`);
   } else {
-    bot.sendMessage(userId, `⛔ У вас нет прав для выдачи токенов.`);
+    bot.sendMessage(msg.chat.id, '⛔ Недостаточно прав.');
   }
 });
 
-// Проверка токена
 bot.onText(/\/token/, (msg) => {
-  const userId = msg.chat.id;
-  const token = config.granted[userId];
-  if (token) {
-    bot.sendMessage(userId, `🔐 Ваш токен: ${token}`);
-  } else {
-    bot.sendMessage(userId, `🔓 У вас пока нет токена.`);
-  }
+  const token = config.granted[msg.chat.id.toString()];
+  bot.sendMessage(msg.chat.id, token ? `🔐 Ваш токен: ${token}` : `🔓 У вас нет токена.`);
 });
+
+// Webhook endpoint
+app.post(`/bot${token}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
+// Экспорт для Vercel
+module.exports = app;
 
 // Показ лицензии
 bot.onText(/\/license/, (msg) => {
