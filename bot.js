@@ -44,4 +44,26 @@ bot.onText(/\/wallet/, (msg) => {
   const text = `💸 Адреса для оплаты:\nTRX: ${config.wallet.trx}\nETH: ${config.wallet.eth}`;
   bot.sendMessage(msg.chat.id, text);
 });
+// Подключаем модуль деплоя
+const { exec } = require('child_process');
+
+bot.onText(/\/deploy_contract/, (msg) => {
+  const userId = msg.chat.id;
+  if (config.admin.includes(userId.toString())) {
+    bot.sendMessage(userId, `🚀 Запускаю развёртывание NUMNet контракта...`);
+    
+    exec('node deploy_contract.js', (error, stdout, stderr) => {
+      if (error) {
+        bot.sendMessage(userId, `⛔ Ошибка: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        bot.sendMessage(userId, `⚠️ Предупреждение: ${stderr}`);
+      }
+      bot.sendMessage(userId, `✅ Ответ:\n${stdout}`);
+    });
+  } else {
+    bot.sendMessage(userId, `⛔ У вас нет прав на развёртывание контрактов.`);
+  }
+});
 
