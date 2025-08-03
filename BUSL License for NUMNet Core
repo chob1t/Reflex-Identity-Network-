@@ -1,0 +1,18 @@
+// Создание сессии Checkout
+const session = await stripe.checkout.sessions.create({
+  payment_method_types: ['card'],
+  line_items: [{
+    price_data: {
+      currency: 'usd',
+      product_data: {
+        name: 'NUMNet Core License (BUSL-1.1)',
+        description: 'Grants access to NUMNet-Reclaim core modules under BUSL-1.1 terms',
+      },
+      unit_amount: 4999, // $49.99
+    },
+    quantity: 1,
+  }],
+  mode: 'payment',
+  success_url: 'https://numnet.reclaim/success?token=vasydrop_premium',
+  cancel_url: 'https://numnet.reclaim/cancel',
+});
