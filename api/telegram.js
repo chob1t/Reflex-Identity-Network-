@@ -2,9 +2,17 @@
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const config = require('../config.json');
+const token = process.env.TELEGRAM_BOT_TOKEN;
 
-const bot = new TelegramBot(config.telegram.token);
+const bot = new TelegramBot(token);
 bot.setWebHook(`${config.telegram.webhook_url}/api/telegram`);
+bot.sendMessage(chatId, "Купить доступ", {
+  reply_markup: {
+    inline_keyboard: [[
+      { text: "Оплатить 150₽", url: quickpay.redirected_url }
+    ]]
+  }
+});
 
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(msg.chat.id, `👋 Привет, ${msg.from.first_name}! Добро пожаловать в NUMNet`);
